@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+{% block title %} — 점수 기록{% endblock %}
+
+{% block extra_style %}
+.cal-wrap { user-select: none; }
+
+/* Nav row */
+.cal-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.cal-nav-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--surface2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text); transition: all 0.2s;
+}
+.cal-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+.cal-month-label { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--text); }
+
+/* Calendar grid */
+.cal-grid {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px var(--shadow);
+  margin-bottom: 20px;
+}
+.cal-header {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  background: var(--surface2); border-bottom: 1px solid var(--border);
+}
+.cal-dow {
+  text-align: center; padding: 10px 0;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.5px; color: var(--text2);
+}
+.cal-dow:first-child { color: #e85535; }
+.cal-dow:last-child  { color: #4a8abf; }
+
+.cal-days { display: grid; grid-template-columns: repeat(7, 1fr); }
+.cal-day {
+  aspect-ratio: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-size: 13px; cursor: pointer;
+  transition: all 0.15s; position: relative;
+  border: 0.5px solid var(--border);
+}
+.cal-day:hover { background: var(--surface2); }
+.cal-day.other-month { color: var(--border); }
+.cal-day.today { font-weight: 700; color: var(--accent); }
+.cal-day.today::after {
+  content: ''; position: absolute; bottom: 5px;
+  width: 4px; height: 4px; border-radius: 50%; background: var(--accent);
+}
+.cal-day.has-record { background: rgba(26,58,92,0.08); }
+.cal-day.selected { background: var(--accent) !important; color: #fff !important; }
+.cal-day.selected::after { display: none; }
+.cal-day-num { line-height: 1; }
+.cal-score {
+  font-size: 9px; font-weight: 700; color: var(--accent);
+  margin-top: 2px; line-height: 1;
+}
+.cal-day.selected .cal-score { color: rgba(255,255,255,0.8); }
+
+/* Record panel */
+.record-panel {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px;
+  box-shadow: 0 2px 12px var(--shadow);
+}
+.record-panel h3 { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+.score-input-row {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+}
+.score-big-input {
+  font-family: 'Bebas Neue', sans-serif; font-size: 48px;
+  width: 120px; text-align: center;
+  background: var(--surface2); color: var(--accent);
+  border: 2px solid var(--accent); border-radius: 12px;
+  padding: 8px 12px; outline: none;
+}
+.score-label { font-size: 12px; color: var(--text2); }
+
+.count-row {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px;
+}
+.count-box { text-align: center; }
+.count-box label { font-size: 11px; font-weight: 700; color: var(--text2); letter-spacing: 0.5px; display: block; margin-bottom: 4px; }
+.count-ctrl { display: flex; align-items: center; gap: 6px; justify-content: center; }
+.count-btn {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--surface2); border: 1px solid var(--border);
+  font-size: 16px; cursor: pointer; color: var(--text);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.count-btn:hover { border-color: var(--accent); color: var(--accent); }
+.count-val { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--text); min-width: 24px; text-align: center; }
+.note-input { width: 100%; resize: none; min-height: 64px; }
+{% endblock %}
+
+{% block content %}
+<div class="page-header fade-up">
+  <h1>📅 점수 기록</h1>
+  <p>날짜를 선택하고 기록을 입력하세요</p>
+</div>
+
+<div class="cal-wrap fade-up fade-up-1">
+  <!-- Month nav -->
+  <div class="cal-nav">
+    <button class="cal-nav-btn" id="prevBtn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="cal-month-label" id="monthLabel"></div>
+    <button class="cal-nav-btn" id="nextBtn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </div>
+
+  <!-- Calendar -->
+  <div class="cal-grid">
+    <div class="cal-header">
+      <div class="cal-dow">일</div><div class="cal-dow">월</div>
+      <div class="cal-dow">화</div><div class="cal-dow">수</div>
+      <div class="cal-dow">목</div><div class="cal-dow">금</div>
+      <div class="cal-dow">토</div>
+    </div>
+    <div class="cal-days" id="calDays"></div>
+  </div>
+
+  <!-- Record input -->
+  <div class="record-panel fade-up fade-up-2" id="recordPanel" style="display:none">
+    <h3 id="recordTitle">📝 기록 입력</h3>
+    <div class="score-input-row">
+      <input type="number" class="score-big-input" id="scoreInput" min="0" max="300" placeholder="0">
+      <div class="score-label">점<br><span style="font-size:10px;opacity:0.6">/ 300점</span></div>
+    </div>
+    <div class="count-row">
+      <div class="count-box">
+        <label>⚡ 스트라이크</label>
+        <div class="count-ctrl">
+          <button class="count-btn" onclick="adj('strikes',-1)">−</button>
+          <div class="count-val" id="v-strikes">0</div>
+          <button class="count-btn" onclick="adj('strikes',1)">+</button>
+        </div>
+      </div>
+      <div class="count-box">
+        <label>✅ 스페어</label>
+        <div class="count-ctrl">
+          <button class="count-btn" onclick="adj('spares',-1)">−</button>
+          <div class="count-val" id="v-spares">0</div>
+          <button class="count-btn" onclick="adj('spares',1)">+</button>
+        </div>
+      </div>
+      <div class="count-box">
+        <label>❌ 미스</label>
+        <div class="count-ctrl">
+          <button class="count-btn" onclick="adj('misses',-1)">−</button>
+          <div class="count-val" id="v-misses">0</div>
+          <button class="count-btn" onclick="adj('misses',1)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="input-group">
+      <label>메모</label>
+      <textarea class="note-input input-group textarea" id="noteInput" placeholder="오늘의 컨디션, 레인 상태 등..."></textarea>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="saveRecord()">💾 저장</button>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let records = {};
+let year = new Date().getFullYear();
+let month = new Date().getMonth();
+let selectedDate = null;
+const counts = { strikes: 0, spares: 0, misses: 0 };
+
+const months = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+
+async function loadRecords() {
+  const res = await fetch('/api/get_records');
+  records = await res.json();
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const label = document.getElementById('monthLabel');
+  label.textContent = `${year}년 ${months[month]}`;
+
+  const grid = document.getElementById('calDays');
+  grid.innerHTML = '';
+
+  const first = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const daysInPrev = new Date(year, month, 0).getDate();
+  const today = new Date();
+
+  // prev month days
+  for (let i = first - 1; i >= 0; i--) {
+    const d = document.createElement('div');
+    d.className = 'cal-day other-month';
+    d.innerHTML = `<span class="cal-day-num">${daysInPrev - i}</span>`;
+    grid.appendChild(d);
+  }
+
+  // current month
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const d = document.createElement('div');
+    d.className = 'cal-day';
+    if (today.getFullYear()===year && today.getMonth()===month && today.getDate()===day) d.classList.add('today');
+    if (records[dateStr]) d.classList.add('has-record');
+    if (selectedDate === dateStr) d.classList.add('selected');
+    const score = records[dateStr]?.score ?? '';
+    d.innerHTML = `<span class="cal-day-num">${day}</span>${score !== '' ? `<span class="cal-score">${score}</span>` : ''}`;
+    d.onclick = () => selectDate(dateStr, records[dateStr]);
+    grid.appendChild(d);
+  }
+
+  // next month
+  const total = first + daysInMonth;
+  const remaining = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let i = 1; i <= remaining; i++) {
+    const d = document.createElement('div');
+    d.className = 'cal-day other-month';
+    d.innerHTML = `<span class="cal-day-num">${i}</span>`;
+    grid.appendChild(d);
+  }
+}
+
+function selectDate(dateStr, existing) {
+  selectedDate = dateStr;
+  const panel = document.getElementById('recordPanel');
+  panel.style.display = 'block';
+
+  const parts = dateStr.split('-');
+  document.getElementById('recordTitle').textContent = `📝 ${parts[0]}년 ${parseInt(parts[1])}월 ${parseInt(parts[2])}일`;
+
+  document.getElementById('scoreInput').value = existing?.score ?? '';
+  document.getElementById('noteInput').value = existing?.note ?? '';
+  counts.strikes = existing?.strikes ?? 0;
+  counts.spares  = existing?.spares  ?? 0;
+  counts.misses  = existing?.misses  ?? 0;
+  ['strikes','spares','misses'].forEach(k => document.getElementById(`v-${k}`).textContent = counts[k]);
+
+  renderCalendar();
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function adj(key, delta) {
+  counts[key] = Math.max(0, counts[key] + delta);
+  document.getElementById(`v-${key}`).textContent = counts[key];
+}
+
+async function saveRecord() {
+  if (!selectedDate) return;
+  const score = document.getElementById('scoreInput').value;
+  const note  = document.getElementById('noteInput').value;
+  const body  = { date: selectedDate, score, note, ...counts };
+
+  // Subtract old counts if editing
+  if (records[selectedDate]) {
+    body.strikes -= records[selectedDate].strikes ?? 0;
+    body.spares  -= records[selectedDate].spares  ?? 0;
+    body.misses  -= records[selectedDate].misses  ?? 0;
+  }
+
+  const res = await fetch('/api/save_record', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ date: selectedDate, score, note,
+      strikes: counts.strikes, spares: counts.spares, misses: counts.misses })
+  });
+
+  if ((await res.json()).ok) {
+    records[selectedDate] = { score, note, strikes: counts.strikes, spares: counts.spares, misses: counts.misses };
+    renderCalendar();
+    showToast('✅ 기록이 저장됐습니다!');
+  }
+}
+
+document.getElementById('prevBtn').onclick = () => { if (month === 0) { month = 11; year--; } else month--; renderCalendar(); };
+document.getElementById('nextBtn').onclick = () => { if (month === 11) { month = 0; year++; } else month++; renderCalendar(); };
+
+loadRecords();
+</script>
+{% endblock %}

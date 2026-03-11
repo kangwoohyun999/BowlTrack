@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %} — 홈{% endblock %}
+
+{% block extra_style %}
+.greeting { margin-bottom: 24px; }
+.greeting-sub { font-size: 13px; color: var(--text2); margin-bottom: 4px; }
+.greeting-name { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--text); line-height: 1.1; }
+.greeting-name span { color: var(--accent); }
+
+/* Stat strip */
+.stat-strip {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
+  margin-bottom: 28px;
+}
+.stat-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 12px; text-align: center;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--accent); line-height: 1; }
+.stat-label { font-size: 10px; color: var(--text2); font-weight: 700; letter-spacing: 0.5px; margin-top: 2px; }
+
+/* Section label */
+.section-label { font-size: 11px; font-weight: 700; color: var(--text2); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; }
+
+/* Big box buttons */
+.box-buttons { display: flex; flex-direction: column; gap: 14px; }
+
+.box-btn {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px;
+  text-decoration: none; color: var(--text);
+  box-shadow: 0 2px 12px var(--shadow);
+  transition: all 0.22s; cursor: pointer; position: relative; overflow: hidden;
+}
+.box-btn::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 4px; border-radius: 4px 0 0 4px;
+}
+.box-btn:nth-child(1)::before { background: var(--accent); }
+.box-btn:nth-child(2)::before { background: var(--pin); }
+.box-btn:nth-child(3)::before { background: var(--gold); }
+.box-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px var(--shadow); border-color: var(--accent); }
+
+.box-icon {
+  width: 56px; height: 56px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; flex-shrink: 0;
+}
+.box-btn:nth-child(1) .box-icon { background: rgba(200,64,42,0.1); }
+.box-btn:nth-child(2) .box-icon { background: rgba(26,58,92,0.1); }
+.box-btn:nth-child(3) .box-icon { background: rgba(212,160,23,0.1); }
+
+.box-body { flex: 1; }
+.box-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.box-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+.box-arrow {
+  width: 28px; height: 28px;
+  border-radius: 50%; border: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text2); flex-shrink: 0;
+  transition: all 0.2s;
+}
+.box-btn:hover .box-arrow { border-color: var(--accent); color: var(--accent); }
+{% endblock %}
+
+{% block content %}
+<!-- Greeting -->
+<div class="greeting fade-up">
+  <div class="greeting-sub">안녕하세요 👋</div>
+  <div class="greeting-name"><span>{{ user.nickname }}</span> 선수님</div>
+</div>
+
+<!-- Stats strip -->
+<div class="stat-strip fade-up fade-up-1">
+  {% set total = user.strikes + user.spares + user.misses %}
+  <div class="stat-item">
+    <div class="stat-num">{{ user.strikes }}</div>
+    <div class="stat-label">스트라이크</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">{{ user.spares }}</div>
+    <div class="stat-label">스페어</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">{{ user.misses }}</div>
+    <div class="stat-label">미스</div>
+  </div>
+</div>
+
+<!-- Menu -->
+<div class="section-label fade-up fade-up-1">메뉴</div>
+<div class="box-buttons">
+  <a href="/calendar" class="box-btn fade-up fade-up-1">
+    <div class="box-icon">📅</div>
+    <div class="box-body">
+      <div class="box-title">볼링 점수 기록</div>
+      <div class="box-desc">날짜별 점수와 상세 기록을 달력으로 관리</div>
+    </div>
+    <div class="box-arrow">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+    </div>
+  </a>
+
+  <a href="/stats" class="box-btn fade-up fade-up-2">
+    <div class="box-icon">📊</div>
+    <div class="box-body">
+      <div class="box-title">투구 통계</div>
+      <div class="box-desc">스트라이크 · 스페어 · 미스 확률 분석</div>
+    </div>
+    <div class="box-arrow">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+    </div>
+  </a>
+
+  <a href="/info" class="box-btn fade-up fade-up-3">
+    <div class="box-icon">ℹ️</div>
+    <div class="box-body">
+      <div class="box-title">볼링 정보</div>
+      <div class="box-desc">장비 구매 · 구질별 장단점 · 유용한 정보</div>
+    </div>
+    <div class="box-arrow">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+    </div>
+  </a>
+</div>
+{% endblock %}

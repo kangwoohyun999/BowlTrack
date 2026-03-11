@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% block title %} — 볼링 정보{% endblock %}
+
+{% block extra_style %}
+.info-section { margin-bottom: 24px; }
+.info-section-title {
+  font-size: 11px; font-weight: 700; color: var(--text2);
+  letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px;
+}
+/* Shop cards */
+.shop-cards { display: flex; flex-direction: column; gap: 10px; }
+.shop-card {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px;
+  text-decoration: none; color: var(--text);
+  box-shadow: 0 2px 8px var(--shadow); transition: all 0.2s;
+}
+.shop-card:hover { border-color: var(--accent); transform: translateX(4px); }
+.shop-icon { font-size: 28px; width: 44px; text-align: center; }
+.shop-info { flex: 1; }
+.shop-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.shop-desc { font-size: 12px; color: var(--text2); }
+.shop-arrow { color: var(--text2); font-size: 18px; }
+
+/* Style pros/cons */
+.style-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.style-tab {
+  padding: 7px 16px; border-radius: 20px;
+  font-size: 12px; font-weight: 700; border: 1.5px solid var(--border);
+  background: var(--surface2); color: var(--text2);
+  cursor: pointer; transition: all 0.2s;
+}
+.style-tab.active {
+  background: var(--pin); color: #fff; border-color: var(--pin);
+}
+.style-content { display: none; }
+.style-content.show { display: block; }
+.style-card-info {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.style-card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.style-card-emoji { font-size: 32px; }
+.style-card-name { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 1px; color: var(--text); }
+.style-card-eng { font-size: 12px; color: var(--text2); }
+.pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pros-box, .cons-box { border-radius: 10px; padding: 12px; }
+.pros-box { background: rgba(26,58,92,0.08); border: 1px solid rgba(26,58,92,0.15); }
+.cons-box { background: rgba(200,64,42,0.06); border: 1px solid rgba(200,64,42,0.12); }
+.pros-label { font-size: 11px; font-weight: 700; color: #1a3a5c; margin-bottom: 6px; letter-spacing: 0.5px; }
+.cons-label { font-size: 11px; font-weight: 700; color: #c8402a; margin-bottom: 6px; letter-spacing: 0.5px; }
+.pros-item, .cons-item { font-size: 12px; color: var(--text); margin-bottom: 3px; padding-left: 10px; position: relative; }
+.pros-item::before { content: '✓'; position: absolute; left: 0; color: #1a3a5c; font-weight: 700; }
+.cons-item::before { content: '✗'; position: absolute; left: 0; color: #c8402a; font-weight: 700; }
+
+/* Tips */
+.tip-list { display: flex; flex-direction: column; gap: 8px; }
+.tip-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px;
+  display: flex; gap: 10px; align-items: flex-start;
+  box-shadow: 0 2px 6px var(--shadow);
+}
+.tip-emoji { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.tip-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+{% endblock %}
+
+{% block content %}
+<div class="page-header fade-up">
+  <h1>ℹ️ 볼링 정보</h1>
+  <p>장비 구매 · 구질 분석 · 팁</p>
+</div>
+
+<!-- Shop links -->
+<div class="info-section fade-up fade-up-1">
+  <div class="info-section-title">🛒 볼링공 구매 사이트</div>
+  <div class="shop-cards">
+    <a href="https://www.bowlingball.com" target="_blank" class="shop-card">
+      <div class="shop-icon">🌐</div>
+      <div class="shop-info">
+        <div class="shop-name">BowlingBall.com</div>
+        <div class="shop-desc">미국 최대 볼링 전문 쇼핑몰 · 할인 많음</div>
+      </div>
+      <div class="shop-arrow">→</div>
+    </a>
+    <a href="https://www.stormbowling.com" target="_blank" class="shop-card">
+      <div class="shop-icon">⚡</div>
+      <div class="shop-info">
+        <div class="shop-name">Storm Bowling</div>
+        <div class="shop-desc">Storm 공식 사이트 · 프리미엄 볼 전문</div>
+      </div>
+      <div class="shop-arrow">→</div>
+    </a>
+    <a href="https://www.hammerbowling.com" target="_blank" class="shop-card">
+      <div class="shop-icon">🔨</div>
+      <div class="shop-info">
+        <div class="shop-name">Hammer Bowling</div>
+        <div class="shop-desc">Hammer 브랜드 공식몰 · 강한 훅 볼</div>
+      </div>
+      <div class="shop-arrow">→</div>
+    </a>
+    <a href="https://smartstore.naver.com/bowlingsupply" target="_blank" class="shop-card">
+      <div class="shop-icon">🇰🇷</div>
+      <div class="shop-info">
+        <div class="shop-name">볼링서플라이 (네이버)</div>
+        <div class="shop-desc">국내 볼링 용품 전문 · 빠른 배송</div>
+      </div>
+      <div class="shop-arrow">→</div>
+    </a>
+  </div>
+</div>
+
+<!-- Style pros/cons -->
+<div class="info-section fade-up fade-up-2">
+  <div class="info-section-title">🎳 구질별 장단점</div>
+  <div class="style-tabs">
+    <button class="style-tab active" onclick="showStyle('dumless', this)">🏹 덤리스</button>
+    <button class="style-tab" onclick="showStyle('twohand', this)">🤲 투핸드</button>
+    <button class="style-tab" onclick="showStyle('cranker', this)">💥 크랭커</button>
+  </div>
+
+  <div id="style-dumless" class="style-content show">
+    <div class="style-card-info">
+      <div class="style-card-top">
+        <div class="style-card-emoji">🏹</div>
+        <div>
+          <div class="style-card-name">덤리스</div>
+          <div class="style-card-eng">Thumbless Style</div>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pros-box">
+          <div class="pros-label">👍 장점</div>
+          <div class="pros-item">강한 회전력 생성</div>
+          <div class="pros-item">핀액션 우수</div>
+          <div class="pros-item">높은 스트라이크율</div>
+          <div class="pros-item">파워 게임 가능</div>
+        </div>
+        <div class="cons-box">
+          <div class="cons-label">👎 단점</div>
+          <div class="cons-item">스페어 처리 어려움</div>
+          <div class="cons-item">오일 컨디션 타남</div>
+          <div class="cons-item">손목 부상 위험</div>
+          <div class="cons-item">컨트롤 어려움</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="style-twohand" class="style-content">
+    <div class="style-card-info">
+      <div class="style-card-top">
+        <div class="style-card-emoji">🤲</div>
+        <div>
+          <div class="style-card-name">투핸드</div>
+          <div class="style-card-eng">Two-hand Style</div>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pros-box">
+          <div class="pros-label">👍 장점</div>
+          <div class="pros-item">극강의 회전수</div>
+          <div class="pros-item">강한 핀액션</div>
+          <div class="pros-item">부상 위험 낮음</div>
+          <div class="pros-item">파워 극대화</div>
+        </div>
+        <div class="cons-box">
+          <div class="cons-label">👎 단점</div>
+          <div class="cons-item">스페어 처리 난이도↑</div>
+          <div class="cons-item">체력 소모 큼</div>
+          <div class="cons-item">오일 민감도 높음</div>
+          <div class="cons-item">어깨 부담 가능</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="style-cranker" class="style-content">
+    <div class="style-card-info">
+      <div class="style-card-top">
+        <div class="style-card-emoji">💥</div>
+        <div>
+          <div class="style-card-name">크랭커</div>
+          <div class="style-card-eng">Cranker Style</div>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pros-box">
+          <div class="pros-label">👍 장점</div>
+          <div class="pros-item">높은 훅 각도</div>
+          <div class="pros-item">핀 타격력 강함</div>
+          <div class="pros-item">드라이 레인 특화</div>
+          <div class="pros-item">화려한 구질</div>
+        </div>
+        <div class="cons-box">
+          <div class="cons-label">👎 단점</div>
+          <div class="cons-item">손목 부상 위험↑</div>
+          <div class="cons-item">컨트롤 어려움</div>
+          <div class="cons-item">오일 레인 불리</div>
+          <div class="cons-item">습득 시간 오래 걸림</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tips -->
+<div class="info-section fade-up fade-up-3">
+  <div class="info-section-title">💡 볼링 꿀팁</div>
+  <div class="tip-list">
+    <div class="tip-item">
+      <div class="tip-emoji">👀</div>
+      <div class="tip-text"><strong>스팟을 보고 던지세요.</strong> 핀이 아닌 레인의 애로우(화살표)를 목표로 삼으면 정확도가 높아집니다.</div>
+    </div>
+    <div class="tip-item">
+      <div class="tip-emoji">🦵</div>
+      <div class="tip-text"><strong>발 스텝이 중요합니다.</strong> 4스텝 또는 5스텝 어프로치를 일정하게 유지하면 컨트롤이 향상됩니다.</div>
+    </div>
+    <div class="tip-item">
+      <div class="tip-emoji">💧</div>
+      <div class="tip-text"><strong>오일 패턴을 파악하세요.</strong> 레인 컨디션(드라이/미디엄/오일리)에 따라 사용하는 볼과 라인을 다르게 해야 합니다.</div>
+    </div>
+    <div class="tip-item">
+      <div class="tip-emoji">🎯</div>
+      <div class="tip-text"><strong>스페어는 직구로.</strong> 스페어를 처리할 땐 훅이 적은 폴리에스터 볼(플라스틱 볼)을 사용하면 유리합니다.</div>
+    </div>
+    <div class="tip-item">
+      <div class="tip-emoji">🔧</div>
+      <div class="tip-text"><strong>볼 표면 관리.</strong> 게임 후 볼을 닦고, 정기적으로 표면 샌딩을 하면 훅 반응이 항상 일정합니다.</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showStyle(id, btn) {
+  document.querySelectorAll('.style-content').forEach(el => el.classList.remove('show'));
+  document.querySelectorAll('.style-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('style-' + id).classList.add('show');
+  btn.classList.add('active');
+}
+</script>
+{% endblock %}

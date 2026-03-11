@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %} — 설정{% endblock %}
+
+{% block extra_style %}
+.settings-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px var(--shadow); margin-bottom: 16px; }
+.settings-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+
+/* Style selector */
+.style-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.style-opt {
+  border: 2px solid var(--border); border-radius: 14px; padding: 14px 8px;
+  text-align: center; cursor: pointer; transition: all 0.2s;
+  background: var(--surface2);
+}
+.style-opt:hover { border-color: var(--text2); }
+.style-opt.selected { border-color: var(--pin); background: rgba(26,58,92,0.08); }
+.style-opt input { display: none; }
+.style-opt-emoji { font-size: 28px; margin-bottom: 6px; }
+.style-opt-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.style-opt-eng  { font-size: 10px; color: var(--text2); margin-top: 2px; }
+
+/* Toggle */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
+.toggle-label { font-size: 14px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.toggle-switch {
+  position: relative; width: 50px; height: 28px;
+  cursor: pointer;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0;
+  background: var(--border); border-radius: 28px;
+  transition: background 0.3s;
+}
+.toggle-slider::before {
+  content: ''; position: absolute;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #fff; left: 3px; top: 3px;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+input:checked + .toggle-slider { background: var(--accent); }
+input:checked + .toggle-slider::before { transform: translateX(22px); }
+{% endblock %}
+
+{% block content %}
+<div class="page-header fade-up">
+  <h1>⚙️ 설정</h1>
+</div>
+
+<!-- Style -->
+<div class="settings-section fade-up fade-up-1">
+  <div class="settings-title">🎳 나의 구질 설정</div>
+  <div class="style-grid">
+    <label class="style-opt {% if user.style == 'dumless' %}selected{% endif %}" id="so-dumless">
+      <input type="radio" name="style" value="dumless" {% if user.style == 'dumless' %}checked{% endif %}>
+      <div class="style-opt-emoji">🏹</div>
+      <div class="style-opt-name">덤리스</div>
+      <div class="style-opt-eng">Thumbless</div>
+    </label>
+    <label class="style-opt {% if user.style == 'twohand' %}selected{% endif %}" id="so-twohand">
+      <input type="radio" name="style" value="twohand" {% if user.style == 'twohand' %}checked{% endif %}>
+      <div class="style-opt-emoji">🤲</div>
+      <div class="style-opt-name">투핸드</div>
+      <div class="style-opt-eng">Two-hand</div>
+    </label>
+    <label class="style-opt {% if user.style == 'cranker' %}selected{% endif %}" id="so-cranker">
+      <input type="radio" name="style" value="cranker" {% if user.style == 'cranker' %}checked{% endif %}>
+      <div class="style-opt-emoji">💥</div>
+      <div class="style-opt-name">크랭커</div>
+      <div class="style-opt-eng">Cranker</div>
+    </label>
+  </div>
+</div>
+
+<!-- Display -->
+<div class="settings-section fade-up fade-up-2">
+  <div class="settings-title">🎨 화면 설정</div>
+  <div class="toggle-row">
+    <div class="toggle-label">🌙 다크 모드</div>
+    <label class="toggle-switch">
+      <input type="checkbox" id="darkToggle" {% if user.dark_mode %}checked{% endif %}>
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+</div>
+
+<!-- Save -->
+<button class="btn btn-primary btn-full fade-up fade-up-3" onclick="saveSettings()">저장하기</button>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Style selection highlight
+document.querySelectorAll('.style-opt input').forEach(radio => {
+  radio.addEventListener('change', () => {
+    document.querySelectorAll('.style-opt').forEach(el => el.classList.remove('selected'));
+    radio.closest('.style-opt').classList.add('selected');
+  });
+});
+
+// Dark mode preview
+const darkToggle = document.getElementById('darkToggle');
+darkToggle.addEventListener('change', () => {
+  document.documentElement.setAttribute('data-theme', darkToggle.checked ? 'dark' : 'light');
+});
+
+async function saveSettings() {
+  const style = document.querySelector('.style-opt input:checked')?.value || 'dumless';
+  const dark_mode = darkToggle.checked;
+  const res = await fetch('/api/update_settings', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ style, dark_mode })
+  });
+  if ((await res.json()).ok) {
+    showToast('✅ 설정이 저장됐습니다!');
+    setTimeout(() => location.reload(), 800);
+  }
+}
+</script>
+{% endblock %}

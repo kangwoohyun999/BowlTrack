@@ -2,6 +2,10 @@
 
 ## Railway 배포 순서 (처음부터 끝까지)
 
+```
+https://web-production-c2004.up.railway.app/
+```
+
 ### 1단계 — GitHub 레포 만들기
 1. [github.com](https://github.com) 접속 → 로그인
 2. 우상단 `+` → **New repository**
